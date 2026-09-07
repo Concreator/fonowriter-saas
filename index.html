@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FonoWriter — Звучание текста влияет на продажи</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.fontsource.org/fonts/inter/400.css">
+    <link rel="stylesheet" href="https://cdn.fontsource.org/fonts/inter/500.css">
+    <link rel="stylesheet" href="https://cdn.fontsource.org/fonts/inter/600.css">
+    <link rel="stylesheet" href="https://cdn.fontsource.org/fonts/inter/700.css">
+    <link rel="stylesheet" href="https://cdn.fontsource.org/fonts/jetbrains-mono/400.css">
+    <link rel="stylesheet" href="https://cdn.fontsource.org/fonts/jetbrains-mono/500.css">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        body {
+            background-color: #0a0a0a;
+            color: #e5e5e5;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .glow-green {
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+        }
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .tab-active {
+            background: #10b981;
+            color: #0a0a0a;
+        }
+        .scale-bar {
+            transition: width 1s ease;
+        }
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(16, 185, 129, 0.2);
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #10b981;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-black/80 backdrop-blur-lg border-b border-gray-800 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-green-500 rounded-full pulse-dot"></div>
+                    <span class="font-bold text-lg">FonoWriter</span>
+                    <span class="text-gray-500 text-sm hidden sm:inline">— Фонорайтер</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#how" class="text-sm text-gray-400 hover:text-white transition">Как работает</a>
+                    <a href="#for-whom" class="text-sm text-gray-400 hover:text-white transition">Для кого</a>
+                    <a href="#pricing" class="text-sm text-gray-400 hover:text-white transition">Тарифы</a>
+                    <a href="#service" class="text-sm text-gray-400 hover:text-white transition">Услуга</a>
+                </div>
+                <button onclick="scrollToSection('waitlist')" class="bg-green-600 hover:bg-green-700 text-black font-semibold px-4 py-2 rounded-lg text-sm transition">
+                    Попробовать
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="fade-in">
+                    <div class="inline-flex items-center space-x-2 bg-gray-900 border border-gray-800 rounded-full px-4 py-2 mb-6">
+                        <div class="w-2 h-2 bg-green-500 rounded-full pulse-dot"></div>
+                        <span class="text-sm text-gray-300">SaaS запускается • Скидка 20% первым пользователям</span>
+                    </div>
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+                        Звучание текста <span class="gradient-text">влияет на продажи</span>
+                    </h1>
+                    <p class="text-xl text-gray-400 mb-8 leading-relaxed">
+                        FonoWriter — AI-ассистент, который переводит подсознательное восприятие слов в цифры. Убирает «дешёвое» звучание, добавляет доверие и вес. Без потери смысла.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 mb-8">
+                        <button onclick="scrollToSection('waitlist')" class="bg-green-600 hover:bg-green-700 text-black font-semibold px-8 py-4 rounded-lg transition glow-green">
+                            Попробовать бесплатно
+                        </button>
+                        <button onclick="scrollToSection('service')" class="border border-gray-700 hover:border-green-600 text-white font-semibold px-8 py-4 rounded-lg transition">
+                            Заказать аудит текстов
+                        </button>
+                    </div>
+                    <div class="flex items-center space-x-6 text-sm text-gray-500">
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>Точность ±0.05</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>45 признаков</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>Работает с русским</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="fade-in">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-green-500/20 blur-3xl rounded-full"></div>
+                        <!-- Локальный скриншот реального интерфейса; пока файла нет — грузится внешний URL -->
+                        <img src="assets/screenshot-after.png" onerror="this.onerror=null;this.src='https://image.qwenlm.ai/public_source/edb127c3-274b-484b-b4e5-13d1e5ba3480/1cb2cf608-cfc8-4a58-885e-463d5e34751e.png'" alt="FonoWriter Interface" class="relative rounded-2xl shadow-2xl border border-gray-800">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how" class="py-20 px-4 sm:px-6 lg:px-8 bg-gray-900/50">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Как это работает</h2>
+                <p class="text-xl text-gray-400">Метафора → Математика → Действие</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 mb-16">
+                <div class="fade-in bg-gray-900 border border-gray-800 rounded-2xl p-8 hover-lift">
+                    <div class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mb-6">
+                        <span class="text-2xl font-bold text-black">1</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">Метафора</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        Слова состоят из звуков. Звуки вызывают ощущения. «Мямля» звучит мягко, «громила» — грубо. Это не магия, а статистика восприятия.
+                    </p>
+                </div>
+
+                <div class="fade-in bg-gray-900 border border-gray-800 rounded-2xl p-8 hover-lift">
+                    <div class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mb-6">
+                        <span class="text-2xl font-bold text-black">2</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">Математика</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        FonoWriter раскладывает текст на 45 признаков и считает отклонение от нормы по алгоритмам Журавлёва и Левицкого. Точность ±0.05.
+                    </p>
+                </div>
+
+                <div class="fade-in bg-gray-900 border border-gray-800 rounded-2xl p-8 hover-lift">
+                    <div class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mb-6">
+                        <span class="text-2xl font-bold text-black">3</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">Действие</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        AI-редактор переписывает текст под нужный вектор: маркетинг, спокойствие, энергия. Движок проверяет каждый вариант — что реально изменилось в звучании.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Live Demo -->
+            <div class="fade-in bg-black border border-gray-800 rounded-2xl p-8">
+                <h3 class="text-2xl font-bold mb-8 text-center">Демонстрация: до и после</h3>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-sm font-semibold text-gray-400">ИСХОДНЫЙ ТЕКСТ</span>
+                            <span class="text-xs font-mono text-red-500" data-demo="before-tags">Хороший −5.8, Красивый −6.0</span>
+                        </div>
+                        <div class="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <p class="text-gray-300 leading-relaxed">
+                                Мы делаем крутые сайты для вашего бизнеса. Наши специалисты работают быстро и качественно.
+                            </p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-sm font-semibold text-green-500">ПОСЛЕ РЕРАЙТА</span>
+                            <span class="text-xs font-mono text-green-500" data-demo="after-tags">Хороший +5.2, Сильный +12.0</span>
+                        </div>
+                        <div class="bg-gray-900 rounded-lg p-6 border border-green-900/50">
+                            <p class="text-gray-300 leading-relaxed">
+                                Мы создаём надёжные решения для вашего бизнеса. Наша команда работает уверенно и доводит дело до результата.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scale Visualization: было → стало, реальный замер движком (proof/measure.py) -->
+                <div class="mt-8 space-y-5" data-demo="scales">
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm text-gray-400">Хороший — Плохой</span>
+                            <span class="text-xs font-mono"><span class="text-red-500">−5.8</span> <span class="text-gray-500">→</span> <span class="text-green-500">+5.2</span></span>
+                        </div>
+                        <div class="flex-1 bg-gray-800 rounded-full h-2 overflow-hidden mb-1">
+                            <div class="scale-bar bg-red-500 h-full rounded-full" style="width: 0%" data-width="45%"></div>
+                        </div>
+                        <div class="flex-1 bg-gray-800 rounded-full h-2 overflow-hidden">
+                            <div class="scale-bar bg-green-500 h-full rounded-full" style="width: 0%" data-width="40%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm text-gray-400">Красивый — Отталкивающий</span>
+                            <span class="text-xs font-mono"><span class="text-red-500">−6.0</span> <span class="text-gray-500">→</span> <span class="text-green-500">+2.5</span></span>
+                        </div>
+                        <div class="flex-1 bg-gray-800 rounded-full h-2 overflow-hidden mb-1">
+                            <div class="scale-bar bg-red-500 h-full rounded-full" style="width: 0%" data-width="46%"></div>
+                        </div>
+                        <div class="flex-1 bg-gray-800 rounded-full h-2 overflow-hidden">
+                            <div class="scale-bar bg-green-500 h-full rounded-full" style="width: 0%" data-width="19%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm text-gray-400">Сильный — Слабый</span>
+                            <span class="text-xs font-mono"><span class="text-green-500">+2.1</span> <span class="text-gray-500">→</span> <span class="text-green-500">+12.0</span></span>
+                        </div>
+                        <div class="flex-1 bg-gray-800 rounded-full h-2 overflow-hidden mb-1">
+                            <div class="scale-bar bg-green-500 h-full rounded-full" style="width: 0%" data-width="16%"></div>
+                        </div>
+                        <div class="flex-1 bg-gray-800 rounded-full h-2 overflow-hidden">
+                            <div class="scale-bar bg-green-500 h-full rounded-full" style="width: 0%" data-width="92%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm text-gray-400">Яркий — Тусклый</span>
+                            <span class="text-xs font-mono"><span class="text-red-500">−5.4</span> <span class="text-gray-500">→</span> <span class="text-green-500">+9.0</span></span>
+                        </div>
+                        <div class="flex-1 bg-gray-800 rounded-full h-2 overflow-hidden mb-1">
+                            <div class="scale-bar bg-red-500 h-full rounded-full" style="width: 0%" data-width="42%"></div>
+                        </div>
+                        <div class="flex-1 bg-gray-800 rounded-full h-2 overflow-hidden">
+                            <div class="scale-bar bg-green-500 h-full rounded-full" style="width: 0%" data-width="69%"></div>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 mt-6 text-center">Цифры — реальный замер движком FonoWriter (проверено: proof/measure.py)</p>
+            </div>
+
+            <!-- Lifehack: реклама -->
+            <div class="fade-in mt-8 bg-gradient-to-r from-green-900/40 to-black border border-green-800/60 rounded-2xl p-8">
+                <div class="flex items-center space-x-3 mb-4">
+                    <span class="bg-green-600 text-black text-xs font-bold px-3 py-1 rounded-full">ЛАЙФХАК</span>
+                    <h3 class="text-2xl font-bold">Самый быстрый эффект — рекламные объявления</h3>
+                </div>
+                <p class="text-lg text-gray-300 leading-relaxed mb-4">
+                    Тот же бюджет — больше кликов и заявок. Достаточно переписать объявление так, чтобы оно звучало
+                    тепло, ясно и уверенно: звучание напрямую влияет на желание кликнуть.
+                </p>
+                <p class="text-gray-400 leading-relaxed mb-6">
+                    Личный кейс автора: CTR объявления вырос с 0.23 до 0.7. Выборка небольшая, но направление
+                    показательное — замер сразу видит, где текст теряет клики.
+                </p>
+                <button onclick="scrollToSection('contact')" class="bg-green-600 hover:bg-green-700 text-black font-semibold px-8 py-4 rounded-lg transition glow-green">
+                    Проверить своё объявление
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- For Whom -->
+    <section id="for-whom" class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12 fade-in">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Для кого создан FonoWriter</h2>
+                <p class="text-xl text-gray-400">Три направления — одно решение</p>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-4 mb-12 fade-in">
+                <button onclick="switchTab('business')" id="tab-business" class="tab-btn tab-active px-6 py-3 rounded-lg font-semibold transition">
+                    Владельцам бизнеса
+                </button>
+                <button onclick="switchTab('marketing')" id="tab-marketing" class="tab-btn bg-gray-900 border border-gray-800 px-6 py-3 rounded-lg font-semibold transition hover:border-green-600">
+                    Маркетологам
+                </button>
+                <button onclick="switchTab('agency')" id="tab-agency" class="tab-btn bg-gray-900 border border-gray-800 px-6 py-3 rounded-lg font-semibold transition hover:border-green-600">
+                    Агентствам
+                </button>
+            </div>
+
+            <div id="content-business" class="tab-content fade-in">
+                <div class="bg-gray-900 border border-gray-800 rounded-2xl p-8 lg:p-12">
+                    <h3 class="text-2xl font-bold mb-6">Проверьте офферы, рассылки и скрипты продаж</h3>
+                    <p class="text-lg text-gray-400 mb-8">
+                        Узнайте, почему клиенты уходят после прочтения КП. FonoWriter покажет, какие слова звучат дёшево, агрессивно или неуверенно — и предложит замены.
+                    </p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-green-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">Коммерческие предложения</h4>
+                                <p class="text-sm text-gray-400">Уберите холод и добавьте вес</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-green-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">Email-рассылки</h4>
+                                <p class="text-sm text-gray-400">Повысьте открываемость и конверсию</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-green-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">Скрипты продаж</h4>
+                                <p class="text-sm text-gray-400">Добавьте уверенность и доверие</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-green-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">Сайты и лендинги</h4>
+                                <p class="text-sm text-gray-400">Сделайте тексты дороже звучанием</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="content-marketing" class="tab-content hidden fade-in">
+                <div class="bg-gray-900 border border-gray-800 rounded-2xl p-8 lg:p-12">
+                    <h3 class="text-2xl font-bold mb-6">Перестаньте гадать на кофейной гуще</h3>
+                    <p class="text-lg text-gray-400 mb-8">
+                        Подбирайте синонимы по цифрам. Пресеты в один клик: маркетинг, энергия, анти-токсичность, экспертиза. Видите разницу до и после в реальном времени.
+                    </p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-green-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">A/B-тестирование звучания</h4>
+                                <p class="text-sm text-gray-400">Сравните варианты заголовков по цифрам</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-green-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">Tone of Voice</h4>
+                                <p class="text-sm text-gray-400">Настройте звучание бренда численно</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-green-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">SMM-контент</h4>
+                                <p class="text-sm text-gray-400">Посты с нужным настроением</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-green-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">Рекламные креативы</h4>
+                                <p class="text-sm text-gray-400">Проверьте звучание до запуска</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="content-agency" class="tab-content hidden fade-in">
+                <div class="bg-gray-900 border border-gray-800 rounded-2xl p-8 lg:p-12">
+                    <h3 class="text-2xl font-bold mb-6">Продавайте «Фоносемантический аудит» как новую услугу</h3>
+                    <p class="text-lg text-gray-400 mb-8">
+                        Отчёты под вашим брендом за 5 минут. Добавьте уникальный сервис в портфель без найма лингвистов. FonoWriter — ваш инструмент для работы с текстами клиентов.
+                    </p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-green-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">Аудит текстов клиентов</h4>
+                                <p class="text-sm text-gray-400">Отчёт по 45 шкалам за минуты</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-green-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">Рерайт «под ключ»</h4>
+                                <p class="text-sm text-gray-400">Переписываем до нужного звучания</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-green-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">Комплекс: сайты + креативы</h4>
+                                <p class="text-sm text-gray-400">SMM-тексты с фоносемантической проверкой</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-green-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">API для интеграции</h4>
+                                <p class="text-sm text-gray-400">Встройте в свои процессы</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Proof Section -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-gray-900/50">
+        <div class="max-w-7xl mx-auto">
+            <div class="fade-in">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-bold mb-4">Не изобретение — улучшение</h2>
+                    <p class="text-xl text-gray-400">Технология, проверенная временем</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <div class="bg-black border border-gray-800 rounded-2xl p-8">
+                            <div class="flex items-center space-x-4 mb-6">
+                                <div class="w-16 h-16 bg-green-600/20 rounded-lg flex items-center justify-center">
+                                    <span class="text-3xl font-bold text-green-500">2002</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold mb-2">Первые системы анализа</h3>
+                                    <p class="text-sm text-gray-400">Алгоритмы Журавлёва и Левицкого</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-400 leading-relaxed mb-6">
+                                Фоносемантический анализ используется с 2002 года. Эффективность подхода доказана в академической и коммерческой среде.
+                            </p>
+                            <div class="border-t border-gray-800 pt-6">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-16 h-16 bg-green-600 rounded-lg flex items-center justify-center">
+                                        <span class="text-3xl font-bold text-black">AI</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-xl font-bold mb-2">FonoWriter 2026</h3>
+                                        <p class="text-sm text-gray-400">Самостоятельная разработка + AI-редактор</p>
+                                    </div>
+                                </div>
+                                <p class="text-gray-400 leading-relaxed mt-6">
+                                    Мы взяли научную базу, написали код с нуля и добавили AI-ассистент, который не просто показывает цифры, но и переписывает текст под нужный вектор.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="bg-black border border-gray-800 rounded-xl p-6">
+                            <div class="flex items-start space-x-4">
+                                <div class="w-12 h-12 bg-green-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-6 h-6 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold mb-2">Детерминированное ядро</h4>
+                                    <p class="text-sm text-gray-400">Цифры воспроизводимы, не «мнение модели». Точность ±0.05.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-black border border-gray-800 rounded-xl p-6">
+                            <div class="flex items-start space-x-4">
+                                <div class="w-12 h-12 bg-green-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-6 h-6 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold mb-2">Работает с русским языком</h4>
+                                    <p class="text-sm text-gray-400">Большинство AI-инструментов заточены под английский. FonoWriter — из коробки для русского.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-black border border-gray-800 rounded-xl p-6">
+                            <div class="flex items-start space-x-4">
+                                <div class="w-12 h-12 bg-green-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-6 h-6 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold mb-2">Офлайн-ядро анализа</h4>
+                                    <p class="text-sm text-gray-400">Замер работает без интернета и без оплаты токенов. AI-редактор — опционально.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing" class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Тарифы SaaS</h2>
+                <p class="text-xl text-gray-400">Начните бесплатно, масштабируйтесь по мере роста</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Free -->
+                <div class="fade-in bg-gray-900 border border-gray-800 rounded-2xl p-8 hover-lift">
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-bold mb-2">Free</h3>
+                        <div class="flex items-baseline space-x-2">
+                            <span class="text-4xl font-bold">0</span>
+                            <span class="text-gray-400">₽/мес</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 mb-8">Для знакомства с продуктом</p>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-start space-x-3">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm">Анализ без ограничений</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm">45 признаков, 45 шкал (24 Журавлёва + 21 Левицкого)</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm">Экспорт отчётов</span>
+                        </li>
+                        <li class="flex items-start space-x-3 opacity-50">
+                            <svg class="w-5 h-5 text-gray-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm">AI-редактор недоступен</span>
+                        </li>
+                    </ul>
+                    <button onclick="scrollToSection('waitlist')" class="w-full border border-gray-700 hover:border-green-600 text-white font-semibold py-3 rounded-lg transition">
+                        Начать бесплатно
+                    </button>
+                </div>
+
+                <!-- Start -->
+                <div class="fade-in bg-gray-900 border-2 border-green-600 rounded-2xl p-8 hover-lift relative">
+                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                        <span class="bg-green-600 text-black text-xs font-bold px-4 py-1 rounded-full">ПОПУЛЯРНЫЙ</span>
+                    </div>
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-bold mb-2">Start</h3>
+                        <div class="flex items-baseline space-x-2">
+                            <span class="text-4xl font-bold">990</span>
+                            <span class="text-gray-400">₽/мес</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 mb-8">Для регулярной работы с текстами</p>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-start space-x-3">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm">Всё из Free</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm">20 AI-правок в месяц</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm">Пресеты в один клик</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm">История сессий</span>
+                        </li>
+                    </ul>
+                    <button onclick="scrollToSection('waitlist')" class="w-full bg-green-600 hover:bg-green-700 text-black font-semibold py-3 rounded-lg transition glow-green">
+                        Получить доступ
+                    </button>
+                </div>
+
+                <!-- Pro -->
+                <div class="fade-in bg-gray-900 border border-gray-800 rounded-2xl p-8 hover-lift">
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-bold mb-2">Pro</h3>
+                        <div class="flex items-baseline space-x-2">
+                            <span class="text-4xl font-bold">2 490</span>
+                            <span class="text-gray-400">₽/мес</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 mb-8">Для профессионалов и агентств</p>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-start space-x-3">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm">Всё из Start</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm">Безлимитные AI-правки</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm">Экспорт отчётов в HTML</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm">Приоритетная очередь</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm">API доступ (скоро)</span>
+                        </li>
+                    </ul>
+                    <button onclick="scrollToSection('waitlist')" class="w-full border border-gray-700 hover:border-green-600 text-white font-semibold py-3 rounded-lg transition">
+                        Получить доступ
+                    </button>
+                </div>
+            </div>
+
+            <div class="text-center mt-12 fade-in">
+                <p class="text-gray-400 mb-4">SaaS запускается. Оставьте email — дадим доступ и скидку 20% на первый месяц.</p>
+                <button onclick="scrollToSection('waitlist')" class="bg-green-600 hover:bg-green-700 text-black font-semibold px-8 py-4 rounded-lg transition glow-green">
+                    Встать в список ожидания
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Service Section -->
+    <section id="service" class="py-20 px-4 sm:px-6 lg:px-8 bg-gray-900/50">
+        <div class="max-w-7xl mx-auto">
+            <div class="fade-in">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-bold mb-4">Нет времени разбираться?</h2>
+                    <p class="text-xl text-gray-400">Мы сделаем это за вас</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 mb-12">
+                    <div class="bg-black border border-gray-800 rounded-2xl p-8 hover-lift">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-2xl font-bold">Фоно-аудит</h3>
+                            <span class="text-3xl font-bold text-green-500">4 500 ₽</span>
+                        </div>
+                        <p class="text-gray-400 mb-6">Отчёт по 45 шкалам (24 Журавлёва + 21 Левицкого) + 3 рекомендации по рерайту</p>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-start space-x-3">
+                                <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-sm">Анализ текстов сайта</span>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-sm">Отчёт с визуализацией</span>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-sm">Рекомендации по улучшению</span>
+                            </li>
+                        </ul>
+                        <button onclick="scrollToSection('contact')" class="w-full border border-gray-700 hover:border-green-600 text-white font-semibold py-3 rounded-lg transition">
+                            Заказать аудит
+                        </button>
+                    </div>
+
+                    <div class="bg-black border-2 border-green-600 rounded-2xl p-8 hover-lift relative">
+                        <div class="absolute -top-4 right-8">
+                            <span class="bg-green-600 text-black text-xs font-bold px-4 py-1 rounded-full">КОМПЛЕКС</span>
+                        </div>
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-2xl font-bold">Звучащий сайт</h3>
+                            <span class="text-3xl font-bold text-green-500">от 75 000 ₽</span>
+                        </div>
+                        <p class="text-gray-400 mb-6">Разработка сайта + написание всех текстов + SMM-пакет на 1 мес. с фоносемантической проверкой</p>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-start space-x-3">
+                                <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-sm">Дизайн и разработка сайта</span>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-sm">Копирайтинг с проверкой звучания</span>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-sm">SMM-контент на 1 месяц</span>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-sm">Рекламные креативы</span>
+                            </li>
+                        </ul>
+                        <button onclick="scrollToSection('contact')" class="w-full bg-green-600 hover:bg-green-700 text-black font-semibold py-3 rounded-lg transition glow-green">
+                            Оставить заявку
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-black border border-gray-800 rounded-2xl p-8 text-center">
+                    <h3 class="text-xl font-bold mb-4">Ретейнер с AI-проверкой</h3>
+                    <p class="text-gray-400 mb-6">Ведение соцсетей/рассылок. Каждый текст перед публикацией проходит FonoWriter.</p>
+                    <div class="flex items-center justify-center space-x-4 mb-6">
+                        <span class="text-3xl font-bold text-green-500">от 35 000 ₽/мес</span>
+                    </div>
+                    <button onclick="scrollToSection('contact')" class="border border-gray-700 hover:border-green-600 text-white font-semibold px-8 py-3 rounded-lg transition">
+                        Обсудить условия
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Waitlist Form -->
+    <section id="waitlist" class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto">
+            <div class="fade-in bg-gray-900 border border-gray-800 rounded-2xl p-8 lg:p-12">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold mb-4">Встать в список ожидания</h2>
+                    <p class="text-xl text-gray-400">SaaS запускается. Напишите нам в мессенджер — дадим доступ и скидку 20% на первый месяц.</p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="https://t.me/southspecialnetwork_bot" target="_top" class="flex-1 text-center bg-green-600 hover:bg-green-700 text-black font-semibold py-4 rounded-lg transition glow-green">
+                        Ранний доступ в Telegram
+                    </a>
+                    <a href="https://max.ru/id910614084910_bot" target="_top" class="flex-1 text-center border border-gray-700 hover:border-green-600 text-white font-semibold py-4 rounded-lg transition">
+                        Ранний доступ в MAX
+                    </a>
+                </div>
+                <p class="text-sm text-gray-500 text-center mt-6">Напишите слово ДОСТУП — вернёмся с доступом и скидкой 20% на первый месяц.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Form -->
+    <section id="contact" class="py-20 px-4 sm:px-6 lg:px-8 bg-gray-900/50">
+        <div class="max-w-3xl mx-auto">
+            <div class="fade-in bg-black border border-gray-800 rounded-2xl p-8 lg:p-12">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold mb-4">Заказать услугу агентства</h2>
+                    <p class="text-xl text-gray-400">Напишите нам — предложим решение и ответим в течение 24 часов</p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="https://t.me/southspecialnetwork_bot" target="_top" class="flex-1 text-center bg-green-600 hover:bg-green-700 text-black font-semibold py-4 rounded-lg transition glow-green">
+                        Написать в Telegram
+                    </a>
+                    <a href="https://max.ru/id910614084910_bot" target="_top" class="flex-1 text-center border border-gray-700 hover:border-green-600 text-white font-semibold py-4 rounded-lg transition">
+                        Написать в MAX
+                    </a>
+                </div>
+                <p class="text-sm text-gray-500 text-center mt-6">Напишите, что вас интересует: аудит 4 500 ₽, комплекс от 75 000 ₽ или ретейнер — либо позвоните: <a href="tel:+79789419359" target="_top" class="text-green-500 hover:text-green-400">+7 (978) 941-93-59</a></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-4 sm:px-6 lg:px-8 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-2 h-2 bg-green-500 rounded-full pulse-dot"></div>
+                        <span class="font-bold text-lg">FonoWriter</span>
+                    </div>
+                    <p class="text-sm text-gray-400">AI-ассистент фоносемантического анализа и рерайта текстов на русском языке.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Продукт</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#how" class="hover:text-white transition">Как работает</a></li>
+                        <li><a href="#pricing" class="hover:text-white transition">Тарифы</a></li>
+                        <li><a href="#waitlist" class="hover:text-white transition">Список ожидания</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Услуги</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#service" class="hover:text-white transition">Фоно-аудит</a></li>
+                        <li><a href="#service" class="hover:text-white transition">Звучащий сайт</a></li>
+                        <li><a href="#contact" class="hover:text-white transition">Консультация</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Контакты</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="https://югспецсети.рф/" target="_top" class="hover:text-white transition">югспецсети.рф</a></li>
+                        <li>ИП Савченко А.О. · ИНН 910614084910</li>
+                        <li><a href="tel:+79789419359" target="_top" class="hover:text-white transition">+7 (978) 941-93-59</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-sm text-gray-400 mb-4 md:mb-0">© 2026 ЮгСпецСети.РФ. Все права защищены.</p>
+                <div class="flex space-x-6 text-sm text-gray-400">
+                    <a href="https://югспецсети.рф/152" target="_top" class="hover:text-white transition">Политика конфиденциальности</a>
+                    <a href="https://югспецсети.рф/reglament" target="_top" class="hover:text-white transition">Оферта</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll
+        function scrollToSection(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Tab switching
+        function switchTab(tab) {
+            // Hide all content
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            // Show selected content
+            document.getElementById('content-' + tab).classList.remove('hidden');
+
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('tab-active');
+                btn.classList.add('bg-gray-900', 'border', 'border-gray-800');
+            });
+            document.getElementById('tab-' + tab).classList.add('tab-active');
+            document.getElementById('tab-' + tab).classList.remove('bg-gray-900', 'border', 'border-gray-800');
+        }
+
+        // Заявки: кнопками в TG/MAX-ботов агентства (форм нет — см. README)
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+
+                    // Animate scale bars
+                    const bars = entry.target.querySelectorAll('.scale-bar');
+                    bars.forEach(bar => {
+                        const width = bar.getAttribute('data-width');
+                        setTimeout(() => {
+                            bar.style.width = width;
+                        }, 300);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Trigger initial animations
+        window.addEventListener('load', function() {
+            document.querySelectorAll('.fade-in').forEach(el => {
+                if (el.getBoundingClientRect().top < window.innerHeight) {
+                    el.classList.add('visible');
+                }
+            });
+        });
+
+        // Авто-высота для iFrame в Tilda: сообщаем высоту родителю
+        function postH() {
+            if (window.parent !== window) {
+                var h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+                window.parent.postMessage({ fonowriterHeight: h }, '*');
+            }
+        }
+        window.addEventListener('load', function() { postH(); setTimeout(postH, 800); });
+        window.addEventListener('resize', postH);
+    </script>
+</body>
+</html>
