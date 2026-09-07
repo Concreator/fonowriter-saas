@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FonoWriter — живое демо</title>
+<link rel="stylesheet" href="https://cdn.fontsource.org/fonts/inter/400.css">
+<link rel="stylesheet" href="https://cdn.fontsource.org/fonts/inter/700.css">
+<link rel="stylesheet" href="https://cdn.fontsource.org/fonts/jetbrains-mono/500.css">
+<style>
+*{font-family:'Inter',system-ui,sans-serif;box-sizing:border-box}
+body{background:#0a0a0a;color:#e5e5e5;margin:0;padding:20px;line-height:1.5}
+.wrap{max-width:860px;margin:0 auto}
+.grad{background:linear-gradient(135deg,#10b981,#34d399);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.card{background:#111827;border:1px solid #1f2937;border-radius:16px;padding:18px;margin:14px 0}
+textarea,input{width:100%;background:#000;border:1px solid #1f2937;border-radius:12px;color:#e5e5e5;padding:12px;font-size:14px}
+textarea:focus,input:focus{outline:none;border-color:#10b981}
+button{background:#16a34a;color:#000;font-weight:700;border:0;border-radius:10px;padding:10px 18px;font-size:14px;cursor:pointer}
+button:hover{background:#22c55e}button:disabled{opacity:.45;cursor:default}
+button.ghost{background:transparent;color:#e5e5e5;border:1px solid #374151}
+button.ghost:hover{border-color:#16a34a}
+.muted{color:#9ca3af;font-size:13px}.mono{font-family:'JetBrains Mono',monospace}
+.badge{display:inline-block;background:#052e1b;border:1px solid #16a34a;color:#4ade80;border-radius:9999px;padding:4px 12px;font-size:13px}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.bar{background:#1f2937;border-radius:9999px;height:8px;overflow:hidden;margin:3px 0}
+.bar div{height:8px;border-radius:9999px}
+.msg{border-radius:12px;padding:8px 12px;margin:6px 0;max-width:88%;white-space:pre-wrap;font-size:14px}
+.msg.user{background:#1f2937;margin-left:auto}.msg.assistant{background:#000;border:1px solid #1f2937}
+#chat{max-height:380px;overflow-y:auto}
+.scale{font-size:13px;margin:2px 0}
+a{color:#34d399}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>⚡ FonoWriter — <span class="grad">живое демо</span></h1>
+  <p class="muted">Анализ — без лимита. Нейросеть: <span id="quota" class="badge">3 AI-ответа + 1 пресет в сутки</span></p>
+
+  <div class="card">
+    <h3>1. Текст</h3>
+    <textarea id="txt" rows="5" placeholder="Вставь рекламное объявление или любой текст...">Клиенты пишут в мессенджеры, а агент отвечает сам и складывает заявки в CRM.</textarea>
+    <div class="row"><button id="btnAnalyze" onclick="doAnalyze()">Анализировать</button></div>
+    <div id="scales" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card">
+    <h3>2. Чат с нейросетью</h3>
+    <div id="chat"></div>
+    <div class="row">
+      <input id="msg" placeholder="Вопрос или просьба (например: подправь текст)..." onkeydown="if(event.key==='Enter')doChat()">
+      <button onclick="doChat()">Отправить</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>3. Пресеты (1 запуск в сутки)</h3>
+    <div class="row" id="presets"></div>
+    <div id="rewrite" style="margin-top:10px"></div>
+  </div>
+  <p class="muted">Демо считает тот же движок, что и полная версия. Лимиты — по IP, сброс раз в сутки. Полный доступ — по подписке.</p>
+</div>
+
+<script>
+// !!! ВПИСАТЬ АДРЕС API (Timeweb) ПРИ ДЕПЛОЕ, например: https://api.югспецсети.рф
+const API_BASE = "https://API-ТВОЙ-ДОМЕН";
+const PRESETS = ["маркетинг","спокойствие","энергия","анти-токсичность","экспертиза"];
+
+function pole(name, v){ const p=name.split(" — "); return v>0?p[0].trim():(p[1]||p[0]).trim(); }
+function api(path, body){
+  return fetch(API_BASE + path, {method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify(body)}).then(async r=>{
+    if(!r.ok){ const t=await r.text(); throw new Error("HTTP "+r.status+": "+t.slice(0,160)); }
+    return {json: await r.json(), h: r.headers};
+  });
+}
+function setQuota(c, p){
+  if(c!==undefined) document.getElementById("quota").textContent =
+    c+" AI-ответа + "+p+" пресет (на сегодня)";
+}
+async function doAnalyze(){
+  const t = document.getElementById("txt").value.trim();
+  if(!t) return;
+  const box = document.getElementById("scales"); box.innerHTML = "<p class=muted>Считаю…</p>";
+  try{
+    const zh = (await api("/v1/fonowriter/analyze",{text:t,method:"zhuravlev"})).json;
+    const lv = (await api("/v1/fonowriter/analyze",{text:t,method:"levitsky"})).json;
+    box.innerHTML = renderScales(zh,"Журавлёв 24") + renderScales(lv,"Левицкий 21");
+  }catch(e){ box.innerHTML = "<p>Ошибка: "+e.message+"</p>"; }
+}
+function renderScales(res, title){
+  const mx = Math.max(...res.scales.map(s=>Math.abs(s.score)), 0.01);
+  let rows = [...res.scales].sort((a,b)=>Math.abs(b.score)-Math.abs(a.score)).slice(0,8).map(s=>{
+    const br = Math.abs(s.score)>2.5, w = Math.min(100, Math.abs(s.score)/mx*100);
+    const c = !br ? "#4b5563" : s.score>0 ? "#22c55e" : "#ef4444";
+    return "<div class=scale>"+pole(s.name,s.score)+" <span class=mono>"+(s.score>0?"+":"")+s.score.toFixed(1)+(br?" ●":"")+"</span>"+
+      "<div class=bar><div style='width:"+w.toFixed(0)+"%;background:"+c+"'></div></div></div>";
+  }).join("");
+  const top = [...res.scales].filter(s=>Math.abs(s.score)>2.5).sort((a,b)=>Math.abs(b.score)-Math.abs(a.score)).slice(0,3)
+    .map(s=>pole(s.name,s.score)+" "+(s.score>0?"+":"")+s.score.toFixed(1)).join(", ") || "нет";
+  return "<h4>"+title+" — ярко: "+top+"</h4>" + rows;
+}
+function bubble(role, text){
+  const d = document.createElement("div"); d.className = "msg "+role; d.textContent = text;
+  const c = document.getElementById("chat"); c.appendChild(d); c.scrollTop = c.scrollHeight;
+  return d;
+}
+async function doChat(){
+  const inp = document.getElementById("msg"), m = inp.value.trim();
+  if(!m) return;
+  const t = document.getElementById("txt").value.trim();
+  bubble("user", m); inp.value = "";
+  const msg = t ? "Текст для правки:\n"+t+"\n\nИнструкция: "+m : m;
+  const b = bubble("assistant", "…");
+  try{
+    const r = await fetch(API_BASE+"/v1/fonowriter/chat/stream",{method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({message:msg,history:[],method:"zhuravlev",preset:"",mode:"chat"})});
+    if(!r.ok) throw new Error("HTTP "+r.status+": "+(await r.text()).slice(0,160));
+    const rd = r.body.getReader(), dec = new TextDecoder(); let buf="", acc="";
+    for(;;){
+      const {done, value} = await rd.read();
+      if(done) break;
+      buf += dec.decode(value,{stream:true});
+      const parts = buf.split(/\r?\n\r?\n/); buf = parts.pop()||"";
+      for(const p of parts){
+        let ev="", data="";
+        for(const ln of p.split("\n")){
+          if(ln.startsWith("event:")) ev=ln.slice(6).trim();
+          else if(ln.startsWith("data:")) data+=ln.slice(5).trim();
+        }
+        try{
+          if(ev==="token"&&data) { acc += JSON.parse(data).token||""; b.textContent = acc; }
+          else if(ev==="done"&&data){
+            const j=JSON.parse(data);
+            if(j.reply!==undefined){ acc=j.reply; b.textContent=acc; }
+            if(j.optimized) document.getElementById("rewrite").innerHTML =
+              "<h4>Готовый вариант → скопируй в работу:</h4><p>"+j.optimized.replace(/</g,"&lt;")+"</p>";
+            if(j.demo_left_chat!==undefined) setQuota(j.demo_left_chat, j.demo_left_preset);
+          }
+          else if(ev==="redirect"&&data){
+            b.textContent = "Запускаю одну итерацию правок…";
+            const j2 = (await api("/v1/fonowriter/chat",{message:msg,history:[],method:"zhuravlev",preset:"",mode:"chat"})).json;
+            b.textContent = j2.reply;
+            if(j2.optimized) document.getElementById("rewrite").innerHTML =
+              "<h4>Готовый вариант → скопируй в работу:</h4><p>"+j2.optimized.replace(/</g,"&lt;")+"</p>";
+          }
+          else if(ev==="error"&&data){ b.textContent += "\n[обрыв: "+JSON.parse(data).error+"]"; }
+        }catch(e){}
+      }
+    }
+  }catch(e){ b.textContent = "Ошибка: "+e.message; }
+}
+function buildPresets(){
+  const box = document.getElementById("presets");
+  PRESETS.forEach(p=>{
+    const btn = document.createElement("button");
+    btn.className = "ghost"; btn.textContent = p;
+    btn.onclick = ()=>runPreset(p, btn);
+    box.appendChild(btn);
+  });
+}
+async function runPreset(p, btn){
+  const t = document.getElementById("txt").value.trim();
+  if(!t){ alert("Сначала вставь текст выше"); return; }
+  btn.disabled = true;
+  const b = bubble("assistant", "Пресет «"+p+"»: работает цикл (1–3 мин)…");
+  try{
+    const sys = "Перепиши текст по вектору «"+p+"». Вывод — только plain text без Markdown.";
+    const {json} = await api("/v1/fonowriter/chat",{message:"Текст для правки:\n"+t+"\n\nИнструкция: "+sys,
+      history:[],method:"zhuravlev",preset:p,mode:"rewrite"});
+    b.textContent = json.reply.slice(0,2000);
+    if(json.optimized) document.getElementById("rewrite").innerHTML =
+      "<h4>Готовый вариант («"+p+"»):</h4><p>"+json.optimized.replace(/</g,"&lt;")+"</p>";
+  }catch(e){ b.textContent = "Ошибка: "+e.message; }
+  btn.disabled = false;
+}
+buildPresets();
+</script>
+</body>
+</html>
