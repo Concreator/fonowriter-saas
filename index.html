@@ -27,9 +27,19 @@
         .font-mono {
             font-family: 'JetBrains Mono', monospace;
         }
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
         body {
             background-color: #0a0a0a;
             color: #e5e5e5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        body > footer:last-child {
+            margin-top: auto;
         }
         .gradient-text {
             background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
