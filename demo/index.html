@@ -34,7 +34,7 @@ a{color:#34d399}
 <body>
 <div class="wrap">
   <h1>⚡ FonoWriter — <span class="grad">живое демо</span></h1>
-  <p class="muted">Анализ — без лимита. Нейросеть: <span id="quota" class="badge">3 бесплатных действия в сутки (вопрос или пресет)</span></p>
+  <p class="muted">Анализ — без лимита. Нейросеть: <span id="quota" class="badge">3 пресета + 15 вопросов в сутки</span></p>
 
   <div class="card">
     <h3>1. Текст</h3>
@@ -53,7 +53,7 @@ a{color:#34d399}
   </div>
 
   <div class="card">
-    <h3>3. Пресеты (тратят общий лимит)</h3>
+    <h3>3. Пресеты (3 запуска в сутки)</h3>
     <div class="row" id="presets"></div>
     <div id="rewrite" style="margin-top:10px"></div>
   </div>
@@ -74,9 +74,8 @@ function api(path, body){
   });
 }
 function setQuota(c, p){
-  const left = (c!==undefined) ? c : p;
-  if(left!==undefined) document.getElementById("quota").textContent =
-    "Осталось бесплатных действий на сегодня: "+left+" из 3";
+  if(c!==undefined && p!==undefined) document.getElementById("quota").textContent =
+    "Осталось на сегодня: "+c+" вопросов + "+p+" пресетов";
 }
 async function doAnalyze(){
   const t = document.getElementById("txt").value.trim();
