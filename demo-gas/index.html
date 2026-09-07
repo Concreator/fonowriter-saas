@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FonoWriter — живое демо (бессерверное)</title>
+<link rel="stylesheet" href="https://cdn.fontsource.org/fonts/inter/400.css">
+<link rel="stylesheet" href="https://cdn.fontsource.org/fonts/inter/700.css">
+<link rel="stylesheet" href="https://cdn.fontsource.org/fonts/jetbrains-mono/500.css">
+<script src="./normalization.js"></script>
+<script src="./engine.js"></script>
+<script src="./composite.js"></script>
+<script src="./assets.js"></script>
+<style>
+*{font-family:'Inter',system-ui,sans-serif;box-sizing:border-box}
+body{background:#0a0a0a;color:#e5e5e5;margin:0;padding:20px;line-height:1.5}
+.wrap{max-width:860px;margin:0 auto}
+.grad{background:linear-gradient(135deg,#10b981,#34d399);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.card{background:#111827;border:1px solid #1f2937;border-radius:16px;padding:18px;margin:14px 0}
+textarea,input{width:100%;background:#000;border:1px solid #1f2937;border-radius:12px;color:#e5e5e5;padding:12px;font-size:14px}
+textarea:focus,input:focus{outline:none;border-color:#10b981}
+button{background:#16a34a;color:#000;font-weight:700;border:0;border-radius:10px;padding:10px 18px;font-size:14px;cursor:pointer}
+button:hover{background:#22c55e}button:disabled{opacity:.45;cursor:default}
+button.ghost{background:transparent;color:#e5e5e5;border:1px solid #374151}
+button.ghost:hover{border-color:#16a34a}
+.muted{color:#9ca3af;font-size:13px}.mono{font-family:'JetBrains Mono',monospace}
+.badge{display:inline-block;background:#052e1b;border:1px solid #16a34a;color:#4ade80;border-radius:9999px;padding:4px 12px;font-size:13px}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.bar{background:#1f2937;border-radius:9999px;height:8px;overflow:hidden;margin:3px 0}
+.bar div{height:8px;border-radius:9999px}
+.msg{border-radius:12px;padding:8px 12px;margin:6px 0;max-width:88%;white-space:pre-wrap;font-size:14px}
+.msg.user{background:#1f2937;margin-left:auto}.msg.assistant{background:#000;border:1px solid #1f2937}
+#chat{max-height:380px;overflow-y:auto}
+.scale{font-size:13px;margin:2px 0}
+a{color:#34d399}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>⚡ FonoWriter — <span class="grad">живое демо</span></h1>
+  <p class="muted">Замер — мгновенно у тебя в браузере (0 ₽). Нейросеть: <span id="quota" class="badge">…</span></p>
+
+  <div class="card">
+    <h3>1. Текст</h3>
+    <textarea id="txt" rows="5" placeholder="Вставь рекламное объявление или любой текст...">Клиенты пишут в мессенджеры, а агент отвечает сам и складывает заявки в CRM.</textarea>
+    <div class="row"><button onclick="doAnalyze()">Анализировать (бесплатно, локально)</button></div>
+    <div id="scales" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card">
+    <h3>2. Чат с нейросетью</h3>
+    <div id="chat"></div>
+    <div class="row">
+      <input id="msg" placeholder="Вопрос (например: что улучшить в тексте?)..." onkeydown="if(event.key==='Enter')doChat()">
+      <button onclick="doChat()">Отправить</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>3. Пресеты</h3>
+    <div class="row" id="presets"></div>
+    <div id="rewrite" style="margin-top:10px"></div>
+  </div>
+  <p class="muted">Движок — тот же, что в полной версии (паритет ±0.05). Полный доступ — по подписке.</p>
+</div>
+
+<script>
+// !!! ВПИСАТЬ URL GAS Web App ПРИ ДЕПЛОЕ
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzNWsEYIDH3j79eaKwkm2iChJFptIYSbHVhm30RB8VZzHKEVL5CCR_sSv6QvSoRkatS/exec";
+const PRESETS = {
+  "маркетинг": { prompt: "Перепиши текст для маркетинга: позитив, свет, радость. Только plain text.", targets: ["Хороший — Плохой", "Красивый — Отталкивающий", "Светлый — Темный", "Радостный — Печальный"] },
+  "спокойствие": { prompt: "Перепиши текст спокойно и мягко. Только plain text.", targets: ["Безопасный — Страшный", "Гладкий — Шероховатый"] },
+  "энергия": { prompt: "Перепиши текст энергично и драйвово. Только plain text.", targets: ["Активный — Пассивный", "Быстрый — Медленный"] },
+  "анти-токсичность": { prompt: "Убери токсичность, сделай мягко и безопасно. Только plain text.", targets: ["Добрый — Злой", "Безопасный — Страшный"] },
+  "экспертиза": { prompt: "Перепиши экспертно и ясно. Только plain text.", targets: ["Простой — Сложный", "Гладкий — Шероховатый"] }
+};
+function fp(){
+  let id = localStorage.getItem("fw_fp");
+  if(!id){ id = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem("fw_fp", id); }
+  return id;
+}
+function pole(name, v){ const p = name.split(" — "); return v > 0 ? p[0].trim() : (p[1] || p[0]).trim(); }
+async function gas(body){
+  const r = await fetch(GAS_URL, { method: "POST", body: JSON.stringify(Object.assign({ fp: fp() }, body)) });
+  const j = await r.json();
+  if(j.error) throw new Error(j.error);
+  return j;
+}
+async function refreshQuota(){
+  try{
+    const q = await gas({ action: "quota" });
+    document.getElementById("quota").textContent =
+      "Осталось на сегодня: " + q.chats_left + " вопросов + " + q.presets_left + " пресетов";
+  }catch(e){ document.getElementById("quota").textContent = "3 пресета + 15 вопросов в сутки"; }
+}
+function renderOne(m, t){
+  const r = analyze(t, m, FONOWRITER_ASSETS, {});
+  const top = r.scales.filter(s=>Math.abs(s.score)>2.5).sort((a,b)=>Math.abs(b.score)-Math.abs(a.score)).slice(0,3)
+    .map(s=>pole(s.name,s.score)+" "+(s.score>0?"+":"")+s.score.toFixed(1)).join(", ") || "нет";
+  const mx = Math.max(...r.scales.map(s=>Math.abs(s.score)), 0.01);
+  const rows = r.scales.slice().sort((a,b)=>Math.abs(b.score)-Math.abs(a.score)).slice(0,8).map(s=>{
+    const br = Math.abs(s.score)>2.5, w = Math.min(100, Math.abs(s.score)/mx*100);
+    const c = !br ? "#4b5563" : s.score>0 ? "#22c55e" : "#ef4444";
+    return "<div class=scale>"+pole(s.name,s.score)+" <span class=mono>"+(s.score>0?"+":"")+s.score.toFixed(1)+(br?" ●":"")+"</span>"+
+      "<div class=bar><div style='width:"+w.toFixed(0)+"%;background:"+c+"'></div></div></div>";
+  }).join("");
+  return "<h4>"+(m==="zhuravlev"?"Журавлёв 24":"Левицкий 21")+" — ярко: "+top+"</h4>"+rows;
+}
+function doAnalyze(){
+  const t = document.getElementById("txt").value.trim();
+  if(!t || typeof FONOWRITER_ASSETS === "undefined") return;
+  document.getElementById("scales").innerHTML = renderOne("zhuravlev", t) + renderOne("levitsky", t);
+}
+function bubble(role, text){
+  const d = document.createElement("div"); d.className = "msg "+role; d.textContent = text;
+  const c = document.getElementById("chat"); c.appendChild(d); c.scrollTop = c.scrollHeight;
+  return d;
+}
+async function doChat(){
+  const inp = document.getElementById("msg"), m = inp.value.trim();
+  if(!m) return;
+  bubble("user", m); inp.value = "";
+  const b = bubble("assistant", "Думаю…");
+  try{
+    const t = document.getElementById("txt").value.trim();
+    const j = await gas({ action: "chat", message: m, systemPrompt: "",
+      history: t ? [{ role: "user", content: "Текст для анализа:\n" + t }] : [] });
+    b.textContent = j.reply;
+  }catch(e){ b.textContent = "Ошибка: " + e.message; }
+  refreshQuota();
+}
+function buildPresets(){
+  const box = document.getElementById("presets");
+  Object.keys(PRESETS).forEach(p=>{
+    const btn = document.createElement("button");
+    btn.className = "ghost"; btn.textContent = p;
+    btn.onclick = ()=>runPreset(p, btn);
+    box.appendChild(btn);
+  });
+}
+async function runPreset(p, btn){
+  const t = document.getElementById("txt").value.trim();
+  if(!t){ alert("Сначала вставь текст выше"); return; }
+  btn.disabled = true;
+  const b = bubble("assistant", "Пресет «"+p+"»: работает цикл (до пары минут)…");
+  try{
+    const j = await gas({ action: "cycle", text: t, preset: p,
+      systemPrompt: PRESETS[p].prompt, targets: PRESETS[p].targets, maxIter: 3 });
+    b.textContent = j.reply.slice(0, 2000);
+    if(j.optimized) document.getElementById("rewrite").innerHTML =
+      "<h4>Готовый вариант («"+p+"»):</h4><p>"+j.optimized.replace(/</g,"&lt;")+"</p>";
+    if(j.notes && j.notes.length) bubble("assistant", "Заметки движка: " + j.notes.join("; "));
+  }catch(e){ b.textContent = "Ошибка: " + e.message; }
+  btn.disabled = false;
+  refreshQuota();
+}
+buildPresets();
+refreshQuota();
+// Авто-высота для вставки через iframe (Tilda): шлём высоту родителю
+function postHeight(){
+  try{
+    const h = Math.min(document.body.scrollHeight + 20, 4000);
+    parent.postMessage({ fonowriterHeight: h }, "*");
+  }catch(e){}
+}
+window.addEventListener("load", ()=>setTimeout(postHeight, 500));
+window.addEventListener("resize", postHeight);
+setInterval(postHeight, 2000);
+</script>
+</body>
+</html>
