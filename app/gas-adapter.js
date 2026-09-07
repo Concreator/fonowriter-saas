@@ -58,6 +58,19 @@
       start: function (c) { chunks.forEach(function (s) { c.enqueue(enc.encode(s)); }); c.close(); }
     }), { status: 200, headers: { 'Content-Type': 'text/event-stream' } });
   }
+  var TARGETS = {
+    "маркетинг": ["Хороший — Плохой", "Красивый — Отталкивающий", "Светлый — Темный", "Радостный — Печальный"],
+    "спокойствие": ["Безопасный — Страшный", "Гладкий — Шероховатый"],
+    "энергия": ["Активный — Пассивный", "Быстрый — Медленный"],
+    "анти-токсичность": ["Добрый — Злой", "Безопасный — Страшный"],
+    "экспертиза": ["Простой — Сложный", "Гладкий — Шероховатый"]
+  };
+  var INTENT_RE = /подправ|исправ|перепиш|перепис|замен|улучш|предложи|предложить|вноси|внеси|принимаю|применяй|правк/i;
+  function hasIntent(msg) {
+    // как бэкенд: маркер текста слева + просьба (иначе это чистый вопрос)
+    if (msg.indexOf("Текст для правки:") === -1) return false;
+    return INTENT_RE.test(msg);
+  }
   function rawTextOf(combined) {
     // как бэкенд: "Текст для правки:\n...\n\nИнструкция: ..."
     var m = String(combined || '').split('Текст для правки:');
@@ -83,7 +96,7 @@
     var signal = opts.signal;
     var body = {};
     try { body = opts.body ? JSON.parse(opts.body) : {}; } catch (e) {}
-    var isV1 = url.indexOf('/v1/fonowriter/') !== -1;
+    var isV1 = url.indexOf('/v1/') !== -1;
     var isHealth = url.replace(/\/$/, '').endsWith('/health');
     if (!isV1 && !isHealth) return origFetch(url, opts);
     // /health
@@ -97,8 +110,17 @@
       return jsonResp({ method: a.method, total_features: a.V,
         scales: a.scales.map(function (s) { return { name: s.name, score: s.score, color_rgb: [0, 0, 0], z_score: 0 }; }) });
     }
-    // /chat/stream — свободный чат (fake-SSE из полного ответа)
+    // /chat/stream — свободный чат (fake-SSE из полного ответа);
+    // rewrite-intent — одна итерация через cycle, как классика сервера
     if (url.indexOf('/v1/fonowriter/chat/stream') !== -1) {
+      if (hasIntent(body.message)) {
+        var rt = rawTextOf(body.message);
+        var cyc = await gasCall({ action: 'cycle', text: rt.raw || body.message,
+          preset: '', systemPrompt: body.system_prompt || '',
+          targets: [], plan: planFromHistory(body.history),
+          maxIter: 1, temperature: body.temperature, thinking: body.thinking }, signal);
+        return fakeStream(cyc.reply, { optimized: cyc.optimized || null });
+      }
       var cs = await gasCall({ action: 'chat', message: body.message, history: body.history || [],
         systemPrompt: body.system_prompt || '', temperature: body.temperature,
         thinking: body.thinking, maxTokens: body.max_tokens }, signal);
@@ -118,7 +140,7 @@
       var rt = rawTextOf(body.message);
       var cyc = await gasCall({ action: 'cycle', text: rt.raw || body.message,
         preset: body.preset || '', systemPrompt: body.system_prompt || '',
-        targets: [], plan: planFromHistory(body.history),
+        targets: TARGETS[body.preset] || [], plan: planFromHistory(body.history),
         maxIter: body.preset ? 3 : 1,
         temperature: body.temperature, thinking: body.thinking }, signal);
       return jsonResp({ reply: cyc.reply, analysis: null, alt_analysis: null,
