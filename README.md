@@ -1,5 +1,9 @@
 # SaaS-лендинг FonoWriter — projects/fonowriter-saas
 
+**Опубликовано: https://concreator.github.io/fonowriter-saas/**
+Репозиторий: https://github.com/Concreator/fonowriter-saas (аккаунт Concreator).
+Деплой: GitHub Pages (main → /), пересборка автоматическая при каждом push в main (~1 мин).
+
 Источник: код AI-стратега владельца (структура «Слоёный пирог»: hero → как работает → 3 сегмента → доказательство → тарифы → услуга → waitlist → контакты).
 Применён как есть + правки координатора (см. ниже). Лендинг услуги с мини-замером живёт отдельно: `projects/fonowriter-landing/`.
 
@@ -11,10 +15,35 @@
 5. **Формы заменены кнопками ботов** (решение владельца: заявки только в TG/MAX, почту не использовать). Waitlist → «Ранний доступ в TG/MAX» (написать ДОСТУП); услуга → «Написать в TG/MAX» + телефон. Мёртвый JS форм удалён.
 6. **Скриншот:** `assets/screenshot-after.png` (локальный) с fallback на внешний URL. **Владелец: положи 2 скриншота из чата в `assets/` как `screenshot-after.png` (рерайт, зелёный) и `screenshot-before.png` (текст до, красный) — после этого fallback можно удалить.**
 
-## Публикация (тот же паттерн: GitHub Pages + iFrame Tilda)
-1. Отдельный репозиторий → Pages → URL вида `https://USERNAME.github.io/fonowriter-saas/`.
-2. В Tilda блок T123 с iframe на этот URL (высота ~6000px, уточнить после рендера; авто-высоты в этом шаблоне нет — при желании добавить как в fonowriter-landing).
-3. Внимание: Tailwind и шрифты грузятся с CDN — без интернета страница не стилизуется.
+## Встройка в Tilda (готово к вставке)
+На отдельной странице сайта — блок **T123 (HTML-код)**:
+
+```html
+<div id="fw-wrap">
+  <iframe id="fw-frame" src="https://concreator.github.io/fonowriter-saas/"
+    style="width:100%;border:0;" scrolling="no" title="FonoWriter — ЮгСпецСети"></iframe>
+</div>
+<script>
+window.addEventListener('message', function(e){
+  if (e.data && e.data.fonowriterHeight) {
+    document.getElementById('fw-frame').style.height = (e.data.fonowriterHeight + 20) + 'px';
+  }
+});
+</script>
+```
+
+Страница сама сообщает высоту родителю (postMessage) — скролла внутри фрейма не будет.
+Проверить на десктопе и мобильном после публикации страницы Tilda.
+
+## Публикация (как было сделано, для повторения)
+1. `git init -b main` в папке проекта → commit.
+2. `gh repo create fonowriter-saas --public` (аккаунт Concreator) → push.
+   Нюанс: системный git подхватывает credentials andreipromarketing-dev из Windows Credential Manager → 403.
+   Лечение только для этого репо: `git remote set-url origin https://Concreator:<gh-auth-token>@github.com/Concreator/fonowriter-saas.git`.
+   Глобальные настройки не трогать (сломается ohotnik-za-klientami).
+3. `gh api repos/Concreator/fonowriter-saas/pages -f build_type=legacy -f 'source[branch]=main' -f 'source[path]=/'`.
+4. Проверка: открыть https://concreator.github.io/fonowriter-saas/ (первый билд ~2 мин).
+5. Внимание: Tailwind и шрифты грузятся с CDN — без интернета страница не стилизуется.
 
 ## Статус решений (2026-09-06)
 - Тарифы Free/990/2490 и услуги 4500/75000+/35000+ — **утверждены владельцем**.
