@@ -979,6 +979,8 @@
         }
         window.addEventListener('load', function() { postH(true); setTimeout(function(){ postH(true); }, 800); });
         window.addEventListener('resize', function() { postH(true); });
+        // тикающий перепост: высота в Tilda самокорректируется в обе стороны (рост и возврат)
+        setInterval(function() { postH(false); }, 2000);
     </script>
 </body>
 </html>
