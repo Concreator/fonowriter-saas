@@ -74,6 +74,11 @@
             outline: none;
             border-color: #10b981;
         }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -92,9 +97,9 @@
                     <a href="#pricing" class="text-sm text-gray-400 hover:text-white transition">Тарифы</a>
                     <a href="#service" class="text-sm text-gray-400 hover:text-white transition">Услуга</a>
                 </div>
-                <button onclick="scrollToSection('waitlist')" class="bg-green-600 hover:bg-green-700 text-black font-semibold px-4 py-2 rounded-lg text-sm transition">
+                <a href="https://югспецсети.рф/fonowriterapp" target="_top" class="bg-green-600 hover:bg-green-700 text-black font-semibold px-4 py-2 rounded-lg text-sm transition">
                     Попробовать
-                </button>
+                </a>
             </div>
         </div>
     </nav>
@@ -115,9 +120,9 @@
                         FonoWriter — AI-ассистент, который переводит подсознательное восприятие слов в цифры. Убирает «дешёвое» звучание, добавляет доверие и вес. Без потери смысла.
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4 mb-8">
-                        <button onclick="scrollToSection('waitlist')" class="bg-green-600 hover:bg-green-700 text-black font-semibold px-8 py-4 rounded-lg transition glow-green">
+                        <a href="https://югспецсети.рф/fonowriterapp" target="_top" class="bg-green-600 hover:bg-green-700 text-black font-semibold px-8 py-4 rounded-lg transition glow-green">
                             Попробовать бесплатно
-                        </button>
+                        </a>
                         <button onclick="scrollToSection('service')" class="border border-gray-700 hover:border-green-600 text-white font-semibold px-8 py-4 rounded-lg transition">
                             Заказать аудит текстов
                         </button>
@@ -618,9 +623,9 @@
                             <span class="text-sm">AI-редактор недоступен</span>
                         </li>
                     </ul>
-                    <button onclick="scrollToSection('waitlist')" class="w-full border border-gray-700 hover:border-green-600 text-white font-semibold py-3 rounded-lg transition">
+                    <a href="https://югспецсети.рф/fonowriterapp" target="_top" class="block text-center w-full border border-gray-700 hover:border-green-600 text-white font-semibold py-3 rounded-lg transition">
                         Начать бесплатно
-                    </button>
+                    </a>
                 </div>
 
                 <!-- Start -->
@@ -662,7 +667,7 @@
                             <span class="text-sm">История сессий</span>
                         </li>
                     </ul>
-                    <button onclick="scrollToSection('waitlist')" class="w-full bg-green-600 hover:bg-green-700 text-black font-semibold py-3 rounded-lg transition glow-green">
+                    <button onclick="scrollToSection('contact')" class="w-full bg-green-600 hover:bg-green-700 text-black font-semibold py-3 rounded-lg transition glow-green">
                         Получить доступ
                     </button>
                 </div>
@@ -709,7 +714,7 @@
                             <span class="text-sm">API доступ (скоро)</span>
                         </li>
                     </ul>
-                    <button onclick="scrollToSection('waitlist')" class="w-full border border-gray-700 hover:border-green-600 text-white font-semibold py-3 rounded-lg transition">
+                    <button onclick="scrollToSection('contact')" class="w-full border border-gray-700 hover:border-green-600 text-white font-semibold py-3 rounded-lg transition">
                         Получить доступ
                     </button>
                 </div>
@@ -717,8 +722,8 @@
 
             <div class="text-center mt-12 fade-in">
                 <p class="text-gray-400 mb-4">SaaS запускается. Напишите нам в мессенджер — дадим доступ и скидку 20% на первый месяц.</p>
-                <button onclick="scrollToSection('waitlist')" class="bg-green-600 hover:bg-green-700 text-black font-semibold px-8 py-4 rounded-lg transition glow-green">
-                    Встать в список ожидания
+                <button onclick="scrollToSection('contact')" class="bg-green-600 hover:bg-green-700 text-black font-semibold px-8 py-4 rounded-lg transition glow-green">
+                    Написать в мессенджер
                 </button>
             </div>
         </div>
@@ -820,28 +825,6 @@
         </div>
     </section>
 
-    <!-- Waitlist Form -->
-    <section id="waitlist" class="py-20 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-3xl mx-auto">
-            <div class="fade-in bg-gray-900 border border-gray-800 rounded-2xl p-8 lg:p-12">
-                <div class="text-center mb-8">
-                    <h2 class="text-3xl font-bold mb-4">Встать в список ожидания</h2>
-                    <p class="text-xl text-gray-400">SaaS запускается. Напишите нам в мессенджер — дадим доступ и скидку 20% на первый месяц.</p>
-                </div>
-
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <a href="https://t.me/southspecialnetwork_bot" target="_top" class="flex-1 text-center bg-green-600 hover:bg-green-700 text-black font-semibold py-4 rounded-lg transition glow-green">
-                        Ранний доступ в Telegram
-                    </a>
-                    <a href="https://max.ru/id910614084910_bot" target="_top" class="flex-1 text-center border border-gray-700 hover:border-green-600 text-white font-semibold py-4 rounded-lg transition">
-                        Ранний доступ в MAX
-                    </a>
-                </div>
-                <p class="text-sm text-gray-500 text-center mt-6">Напишите слово ДОСТУП — вернёмся с доступом и скидкой 20% на первый месяц.</p>
-            </div>
-        </div>
-    </section>
-
     <!-- Contact Form -->
     <section id="contact" class="py-20 px-4 sm:px-6 lg:px-8 bg-gray-900/50">
         <div class="max-w-3xl mx-auto">
@@ -880,7 +863,6 @@
                     <ul class="space-y-2 text-sm text-gray-400">
                         <li><a href="#how" class="hover:text-white transition">Как работает</a></li>
                         <li><a href="#pricing" class="hover:text-white transition">Тарифы</a></li>
-                        <li><a href="#waitlist" class="hover:text-white transition">Список ожидания</a></li>
                     </ul>
                 </div>
                 <div>
@@ -973,15 +955,20 @@
             });
         });
 
-        // Авто-высота для iFrame в Tilda: сообщаем высоту родителю
-        function postH() {
+        // Авто-высота для iFrame в Tilda: сообщаем высоту родителю.
+        // Шлём только при реальном изменении (допуск 48px), иначе padding +20
+        // копится каждым тиком и страница убегает в бесконечность.
+        var lastHgt = 0;
+        function postH(force) {
             if (window.parent !== window) {
-                var h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+                var h = Math.min(Math.max(document.body.scrollHeight, document.documentElement.scrollHeight), 8000);
+                if (!force && Math.abs(h - lastHgt) < 48) return;
+                lastHgt = h;
                 window.parent.postMessage({ fonowriterHeight: h }, '*');
             }
         }
-        window.addEventListener('load', function() { postH(); setTimeout(postH, 800); });
-        window.addEventListener('resize', postH);
+        window.addEventListener('load', function() { postH(true); setTimeout(function(){ postH(true); }, 800); });
+        window.addEventListener('resize', function() { postH(true); });
     </script>
 </body>
 </html>
