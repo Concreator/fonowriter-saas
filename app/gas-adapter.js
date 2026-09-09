@@ -175,7 +175,18 @@
     if (!GAS_URL) return null;
     try {
       var j = await gasCall({ action: 'quota' });
-      return { chats: j.chats_left, presets: j.presets_left };
+      return { chats: j.chats_left, presets: j.presets_left, promo: j.promo || null };
     } catch (e) { return null; }
+  };
+  // промокод тарифа: активация/отвязка (код хранится в браузере, счётчик — на ключе в GAS)
+  window.__fwPromoActivate = async function (code) {
+    await init();
+    if (!GAS_URL) throw new Error('нет GAS');
+    var j = await gasCall({ action: 'license', code: code || '' });
+    try {
+      if (j && j.code) localStorage.setItem('pw_promo', j.code);
+      else localStorage.removeItem('pw_promo');
+    } catch (e) {}
+    return j;
   };
 })();
